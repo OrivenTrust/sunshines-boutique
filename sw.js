@@ -1,5 +1,5 @@
 /* Sunshine's Boutique service worker: offline shell, fast images, and "Share to Studio" */
-const V = 'sunshine-v1';
+const V = 'sunshine-v3';
 const SHELL = ['/', '/assets/styles.css', '/assets/core.js', '/assets/shop.js', '/assets/icons.js', '/assets/config.js', '/assets/icon.svg', '/assets/vendor/supabase.js', '/studio/', '/studio/studio.css', '/studio/studio.js'];
 
 self.addEventListener('install', (e) => {
