@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>My account · Sunshine's Boutique</title>
+  <meta name="description" content="Sign in to Sunshine's Boutique to save favourites and rate us.">
+  <meta name="theme-color" content="#FBF6EE">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" href="/assets/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Sunshine's">
+  <link rel="preload" href="/assets/fonts/fraunces-latin-full-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/assets/styles.css">
+</head>
+<body>
+  <header class="header scrolled">
+    <div class="wrap">
+      <a class="logo" href="/" aria-label="Back to the shop"><span class="mark" data-sun></span><span class="word"><b>Sunshine's</b><small>BOUTIQUE</small></span></a>
+      <a class="btn sm light" href="/#shop">Shop</a>
+    </div>
+  </header>
+
+  <main id="app">
+    <!-- Signed out -->
+    <section class="auth-wrap" id="authView" hidden>
+      <div class="bgsun" data-sun></div>
+      <div class="auth-card">
+        <span class="eyebrow" id="authEyebrow">Welcome</span>
+        <h1 id="authTitle">Join the <em>sunshine</em> list</h1>
+        <p style="margin:0;color:var(--muted)" id="authLead">Save favourites, hear about new pieces first and leave us a review.</p>
+        <button class="btn google block" id="googleBtn"><span data-i="google"></span> Continue with Google</button>
+        <div class="or">or</div>
+        <div class="tabs" role="tablist">
+          <button role="tab" aria-selected="true" data-mode="signup">Create account</button>
+          <button role="tab" aria-selected="false" data-mode="signin">Sign in</button>
+        </div>
+        <form class="form" id="authForm">
+          <div class="field" id="nameField"><label for="aName">Your name</label><input id="aName" autocomplete="name"></div>
+          <div class="field"><label for="aEmail">Email</label><input id="aEmail" type="email" required autocomplete="email"></div>
+          <div class="field" id="passField"><label for="aPass">Password</label><input id="aPass" type="password" minlength="6" autocomplete="new-password"></div>
+          <button class="btn block" type="submit" id="authSubmit">Create my account</button>
+        </form>
+        <p style="margin:0;text-align:center;font-size:14px;color:var(--muted)"><button class="linkish" id="forgotBtn" type="button">Forgot your password?</button></p>
+      </div>
+    </section>
+
+    <!-- New password (after reset link) -->
+    <section class="auth-wrap" id="resetView" hidden>
+      <div class="auth-card">
+        <span class="eyebrow">Almost there</span>
+        <h1>Choose a new <em>password</em></h1>
+        <form class="form" id="resetForm">
+          <div class="field"><label for="newPass">New password</label><input id="newPass" type="password" minlength="6" required autocomplete="new-password"></div>
+          <button class="btn block" type="submit">Save password</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- Signed in -->
+    <section class="dash" id="dashView" hidden>
+      <div class="wrap">
+        <div class="hello"><div class="av" id="avatar"></div><div><span class="eyebrow">My account</span><h1 id="hi">Hello</h1></div></div>
+
+        <div class="panel" id="wishlist">
+          <h2>My <em>wishlist</em></h2>
+          <div class="grid" id="wishGrid"></div>
+        </div>
+
+        <div class="panel" id="rate">
+          <h2>Rate <em>Sunshine's</em></h2>
+          <p style="color:var(--muted);margin-top:-6px">How was your experience with our shop and app?</p>
+          <form class="form" id="rateForm">
+            <div class="rate-stars" id="rateStars" role="radiogroup" aria-label="Your rating"></div>
+            <div class="field"><label for="rComment">Your words (optional)</label><textarea id="rComment" maxlength="1000" placeholder="What did you buy? How did it make you feel?"></textarea></div>
+            <button class="btn" type="submit">Post my review</button>
+          </form>
+          <div id="rateThanks" hidden>
+            <p style="font:400 24px/1.3 var(--serif);margin:0 0 16px">Thank you so much — you made our day ✺</p>
+            <div class="google-nudge" id="googleNudge" hidden>
+              <span data-i="google" style="width:34px;flex:none"></span>
+              <div style="flex:1"><b>Would you share it on Google too?</b><br><span style="color:var(--muted);font-size:14px">It helps other women in Kampala find us.</span></div>
+              <a class="btn sm" id="googleReviewBtn" target="_blank" rel="noopener">Review</a>
+            </div>
+            <button class="linkish" id="editReview" type="button" style="margin-top:14px">Edit my review</button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>My <em>details</em></h2>
+          <form class="form" id="profileForm">
+            <div class="row2">
+              <div class="field"><label for="pName">Name</label><input id="pName" autocomplete="name"></div>
+              <div class="field"><label for="pPhone">Phone / WhatsApp</label><input id="pPhone" type="tel" autocomplete="tel"></div>
+            </div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap">
+              <button class="btn" type="submit">Save</button>
+              <button class="btn ghost" type="button" id="signOut">Sign out</button>
+              <a class="btn light" id="studioLink" href="/studio/" hidden>Open Studio</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="/assets/account.js"></script>
+</body>
+</html>

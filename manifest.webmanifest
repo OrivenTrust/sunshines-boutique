@@ -1,0 +1,23 @@
+{
+  "id": "/",
+  "name": "Sunshine's Boutique",
+  "short_name": "Sunshine's",
+  "description": "Hand-picked fashion from Namugongo, Kampala. New pieces every week — order in one tap on WhatsApp.",
+  "start_url": "/?source=app",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FBF6EE",
+  "theme_color": "#FBF6EE",
+  "lang": "en-UG",
+  "categories": ["shopping", "lifestyle"],
+  "icons": [
+    { "src": "/assets/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/assets/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/assets/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "New in", "url": "/#shop", "icons": [{ "src": "/assets/icon-192.png", "sizes": "192x192" }] },
+    { "name": "My wishlist", "url": "/account.html#wishlist", "icons": [{ "src": "/assets/icon-192.png", "sizes": "192x192" }] }
+  ]
+}
