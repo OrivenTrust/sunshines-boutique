@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Sunshine Studio</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#2A1E17">
+  <link rel="manifest" href="/studio/manifest.webmanifest">
+  <link rel="icon" href="/assets/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/assets/studio-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Studio">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="preload" href="/assets/fonts/fraunces-latin-full-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/assets/styles.css">
+  <link rel="stylesheet" href="/studio/studio.css">
+</head>
+<body class="studio">
+  <!-- LOGIN -->
+  <section id="loginView" class="s-login" hidden>
+    <div class="s-login-sun" data-sun></div>
+    <div class="s-login-card">
+      <span class="eyebrow">Owner only</span>
+      <h1>Sunshine <em>Studio</em></h1>
+      <p>Add new pieces from your phone in seconds. The AI writes everything for you.</p>
+      <button class="btn google block" id="sGoogle"><span data-i="google"></span> Sign in with Google</button>
+      <div class="or">or</div>
+      <form class="form" id="sLogin">
+        <div class="field"><label for="sEmail">Email</label><input id="sEmail" type="email" autocomplete="email" required></div>
+        <div class="field"><label for="sPass">Password</label><input id="sPass" type="password" autocomplete="current-password" required></div>
+        <button class="btn sun block" type="submit">Sign in</button>
+      </form>
+      <p class="s-fine" id="notAdmin" hidden>This account isn't an owner account. <button class="linkish" id="switchAcct">Use another account</button></p>
+    </div>
+  </section>
+
+  <!-- APP -->
+  <div id="appView" hidden>
+    <header class="s-top">
+      <div class="s-top-in">
+        <span class="s-mark" data-sun></span>
+        <div class="s-title"><small id="greet">Good day</small><b id="tabTitle">Add pieces</b></div>
+        <a class="icon-btn s-view" href="/" target="_blank" aria-label="View the shop" data-i="arrow"></a>
+      </div>
+    </header>
+
+    <main class="s-main">
+      <!-- ADD -->
+      <section class="s-tab" id="tab-add">
+        <div id="pickStep">
+          <div class="s-hero">
+            <h2>What's new <em>today?</em></h2>
+            <p>Add photos and the AI will name, describe and price each piece for you.</p>
+          </div>
+          <div class="s-pick">
+            <label class="s-pick-btn big">
+              <input type="file" accept="image/*" capture="environment" id="camInput" hidden>
+              <span class="ic" data-i="camera"></span><b>Take a photo</b><small>Use your camera</small>
+            </label>
+            <label class="s-pick-btn">
+              <input type="file" accept="image/*" multiple id="galInput" hidden>
+              <span class="ic" data-i="images"></span><b>Choose photos</b><small>Gallery or WhatsApp saves</small>
+            </label>
+          </div>
+          <details class="s-help" id="waHelp">
+            <summary><span data-i="wa"></span> Adding photos from WhatsApp</summary>
+            <div id="waHelpBody"></div>
+          </details>
+        </div>
+
+        <div id="groupStep" hidden>
+          <div class="s-strip" id="pickedStrip"></div>
+          <div class="s-card">
+            <div class="opt-label">These photos show…</div>
+            <div class="s-seg" role="radiogroup">
+              <button type="button" role="radio" aria-checked="true" data-group="one"><b>One piece</b><small>different angles</small></button>
+              <button type="button" role="radio" aria-checked="false" data-group="each"><b>Separate pieces</b><small>one per photo</small></button>
+            </div>
+            <div class="field" style="margin-top:14px"><label for="hint">A note for the AI (optional)</label><input id="hint" placeholder="e.g. size M & L, 85k, linen"></div>
+          </div>
+          <div class="s-actions">
+            <button class="btn ghost-dark" id="cancelPick">Cancel</button>
+            <button class="btn sun" id="runAI"><span data-i="sparkle"></span> Write it for me</button>
+          </div>
+        </div>
+
+        <div id="draftStep" hidden>
+          <div id="drafts"></div>
+          <div class="s-actions sticky">
+            <button class="btn ghost-dark" id="discardAll">Discard</button>
+            <button class="btn sun" id="publishAll">Publish</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ITEMS -->
+      <section class="s-tab" id="tab-items" hidden>
+        <label class="search dark"><span data-i="search"></span><input id="itemQ" type="search" placeholder="Search your pieces"></label>
+        <div class="s-filter" id="itemFilter">
+          <button aria-pressed="true" data-f="all">All</button><button aria-pressed="false" data-f="published">Live</button><button aria-pressed="false" data-f="sold">Sold</button><button aria-pressed="false" data-f="hidden">Hidden</button><button aria-pressed="false" data-f="draft">Drafts</button>
+        </div>
+        <div class="s-list" id="itemList"></div>
+      </section>
+
+      <!-- INBOX -->
+      <section class="s-tab" id="tab-inbox" hidden>
+        <div class="s-filter" id="inboxSeg"><button aria-pressed="true" data-v="messages">Messages</button><button aria-pressed="false" data-v="reviews">Reviews</button></div>
+        <div class="s-list" id="inboxList"></div>
+      </section>
+
+      <!-- SETTINGS -->
+      <section class="s-tab" id="tab-settings" hidden>
+        <form class="s-card form" id="settingsForm">
+          <h3>Shop details</h3>
+          <div class="field"><label for="st_whatsapp">WhatsApp number for orders</label><input id="st_whatsapp" name="whatsapp" type="tel" placeholder="e.g. 0772 123456"></div>
+          <div class="field"><label for="st_google">Google review link</label><input id="st_google" name="google_review_url" type="url" placeholder="https://g.page/r/…/review"></div>
+          <div class="field"><label for="st_ann">Top banner message</label><input id="st_ann" name="announcement"></div>
+          <div class="field"><label for="st_sub">Welcome text under “Dressed in sunshine”</label><textarea id="st_sub" name="hero_subtitle" rows="3"></textarea></div>
+          <div class="field"><label for="st_about">Our story</label><textarea id="st_about" name="about" rows="6" placeholder="Leave empty to keep the default story"></textarea></div>
+          <div class="field"><label for="st_hours">Opening hours</label><input id="st_hours" name="hours"></div>
+          <div class="row2">
+            <div class="field"><label for="st_ig">Instagram</label><input id="st_ig" name="instagram" placeholder="@sunshinesboutique"></div>
+            <div class="field"><label for="st_tt">TikTok</label><input id="st_tt" name="tiktok" placeholder="@sunshinesboutique"></div>
+          </div>
+          <div class="field"><label for="st_fb">Facebook page link</label><input id="st_fb" name="facebook" type="url"></div>
+          <button class="btn sun block" type="submit">Save changes</button>
+        </form>
+        <div class="s-card">
+          <h3>This phone</h3>
+          <p class="s-muted" id="installHelp"></p>
+          <button class="btn ghost-dark block install-only" id="installStudio"><span data-i="download"></span> Install Studio app</button>
+          <button class="btn ghost-dark block" id="signOutS" style="margin-top:10px">Sign out</button>
+        </div>
+      </section>
+    </main>
+
+    <nav class="s-nav" aria-label="Studio">
+      <button data-tab="add" aria-current="page"><span data-i="plusSq"></span>Add</button>
+      <button data-tab="items"><span data-i="hanger"></span>Pieces</button>
+      <button data-tab="inbox"><span data-i="mail"></span>Inbox<i class="badge" id="inboxBadge" hidden></i></button>
+      <button data-tab="settings"><span data-i="gear"></span>Settings</button>
+    </nav>
+  </div>
+
+  <!-- Edit sheet -->
+  <dialog class="sheet s-sheet" id="editSheet">
+    <div class="grab"></div>
+    <div class="sheet-body pad" id="editBody"></div>
+  </dialog>
+
+  <div class="s-busy" id="busy" hidden><div class="s-busy-sun" data-sun></div><p id="busyText">Working…</p></div>
+
+  <script type="module" src="/studio/studio.js"></script>
+</body>
+</html>
