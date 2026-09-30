@@ -304,11 +304,12 @@ section { scroll-margin-top: 80px; }
 .footer-grid { display: grid; gap: 28px; grid-template-columns: 1fr 1fr; border-top: 1px solid var(--line); padding-top: 34px; }
 @media (min-width: 900px) { .footer-grid { grid-template-columns: 2fr 1fr 1fr 1fr; } }
 .footer h4 { font: 700 11px/1 var(--sans); letter-spacing: .2em; text-transform: uppercase; color: var(--muted); margin: 0 0 14px; }
-.footer a { display: block; text-decoration: none; padding: 5px 0; color: var(--ink-2); font-size: 14.5px; }
+.footer .logo { display: flex; }
+.footer a:not(.logo) { display: block; text-decoration: none; padding: 5px 0; color: var(--ink-2); font-size: 14.5px; }
 .footer a:hover { color: var(--sun-deep); }
 .footer .fine { color: var(--muted); font-size: 12.5px; margin-top: 40px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
 .socials { display: flex; gap: 8px; }
-.socials a { width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--line); display: grid; place-items: center; padding: 0; }
+.footer .socials a { width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--line); display: grid; place-items: center; padding: 0; }
 .socials svg { width: 18px; height: 18px; }
 
 /* ---------- floating WhatsApp ---------- */
