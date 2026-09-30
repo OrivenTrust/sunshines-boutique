@@ -124,7 +124,7 @@ function heroImages() {
   const withImg = products.filter((p) => p.images?.length && p.status !== 'sold');
   const pick = [...withImg.filter((p) => p.featured), ...withImg.filter((p) => !p.featured)];
   const [a, b] = pick;
-  const set = (el, p) => { if (!p) return; el.classList.remove('empty'); el.innerHTML = `<img src="${esc(p.images[0])}" alt="${esc(p.name)}">`; };
+  const set = (el, p) => { if (!p) return; el.classList.remove('blank'); el.innerHTML = `<img src="${esc(p.images[0])}" alt="${esc(p.name)}">`; };
   set($('.arch.a1'), a); set($('.arch.a2'), b || a);
   set($('#storyArt'), pick[2] || pick[1] || a);
   $('#statItems').textContent = products.filter((p) => p.status === 'published').length || '—';

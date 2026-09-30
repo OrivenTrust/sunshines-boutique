@@ -156,8 +156,8 @@ h2 em, h1 em { font-style: italic; color: var(--sun-deep); }
 }
 .hero-badge svg { position: absolute; inset: 6px; width: calc(100% - 12px); height: calc(100% - 12px); animation: spin 22s linear infinite; }
 .hero-badge text { font: 700 8.6px var(--sans); letter-spacing: .28em; fill: var(--sun-2); text-transform: uppercase; }
-.arch.empty { display: grid; place-items: center; background: linear-gradient(160deg, #F7E3C0, #EFC9B8 60%, #E9A23B); }
-.arch.empty .sunmark { width: 45%; fill: #fff; opacity: .8; }
+.arch.blank { display: grid; place-items: center; background: linear-gradient(160deg, #F7E3C0, #EFC9B8 60%, #E9A23B); }
+.arch.blank .sunmark { width: 45%; fill: #fff; opacity: .8; }
 
 /* ---------- marquee ---------- */
 .marquee { border-block: 1px solid var(--line); background: var(--paper); overflow: hidden; padding: 18px 0; }
