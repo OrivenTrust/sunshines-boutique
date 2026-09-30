@@ -1,5 +1,5 @@
 /* Sunshine's Boutique service worker: offline shell, fast images, and "Share to Studio" */
-const V = 'sunshine-v3';
+const V = 'sunshine-v4';
 const SHELL = ['/', '/assets/styles.css', '/assets/core.js', '/assets/shop.js', '/assets/icons.js', '/assets/config.js', '/assets/icon.svg', '/assets/vendor/supabase.js', '/studio/', '/studio/studio.css', '/studio/studio.js'];
 
 self.addEventListener('install', (e) => {
@@ -47,15 +47,14 @@ self.addEventListener('fetch', (e) => {
 
   // Pages: network first, fall back to cache when offline
   if (req.mode === 'navigate') {
-    e.respondWith(fetch(req).then((res) => {
+    e.respondWith(fetch(req, { cache: 'no-cache' }).then((res) => {
       const copy = res.clone(); caches.open(V).then((c) => c.put(req, copy)); return res;
     }).catch(async () => (await caches.match(req, { ignoreSearch: true })) || caches.match('/')));
     return;
   }
-  // Assets: stale-while-revalidate
-  e.respondWith(caches.open(V).then(async (c) => {
-    const hit = await c.match(req);
-    const net = fetch(req).then((res) => { if (res.ok) c.put(req, res.clone()); return res; }).catch(() => hit);
-    return hit || net;
-  }));
+  // Assets: network first (always fresh after an update), cache as offline fallback
+  e.respondWith(fetch(req, { cache: 'no-cache' }).then((res) => {
+    if (res.ok) { const copy = res.clone(); caches.open(V).then((c) => c.put(req, copy)); }
+    return res;
+  }).catch(() => caches.match(req)));
 });
