@@ -53,6 +53,7 @@
           <div class="s-hero">
             <h2>What's new <em>today?</em></h2>
             <p>Add photos and the AI will name, describe and price each piece for you.</p>
+            <ol class="s-steps"><li><b>1</b> Add photos</li><li><b>2</b> AI writes the details</li><li><b>3</b> Tap <b>Publish</b></li></ol>
           </div>
           <div class="s-pick">
             <label class="s-pick-btn big">
@@ -82,15 +83,16 @@
           </div>
           <div class="s-actions">
             <button class="btn ghost-dark" id="cancelPick">Cancel</button>
-            <button class="btn sun" id="runAI"><span data-i="sparkle"></span> Write it for me</button>
+            <button class="btn sun" id="runAI">Next <span data-i="arrow"></span></button>
           </div>
         </div>
 
         <div id="draftStep" hidden>
+          <p class="s-muted" style="margin:4px 4px 14px">Check the details below (change anything you like), then tap <b style="color:var(--sun-2)">Publish to shop</b>.</p>
           <div id="drafts"></div>
           <div class="s-actions sticky">
             <button class="btn ghost-dark" id="discardAll">Discard</button>
-            <button class="btn sun" id="publishAll">Publish</button>
+            <button class="btn sun" id="publishAll">Publish to shop</button>
           </div>
         </div>
       </section>

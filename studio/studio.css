@@ -135,5 +135,9 @@ body.studio::before { opacity: .2; mix-blend-mode: screen; }
 .s-busy-sun .sunmark .rays { animation-duration: 3s; }
 .s-busy p { font: italic 400 24px var(--serif); margin: 0; max-width: 20ch; }
 
-.studio .toast { bottom: calc(100px + env(safe-area-inset-bottom)); background: var(--tx); color: var(--ink); }
+.studio .toast { bottom: calc(160px + env(safe-area-inset-bottom)); background: var(--tx); color: var(--ink); }
 .studio .toast.err { background: var(--terra); color: #fff; }
+
+.s-steps { list-style: none; padding: 0; margin: 16px 0 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.s-steps li { display: inline-flex; align-items: center; gap: 8px; background: var(--card); border: 1px solid var(--ln); border-radius: 99px; padding: 6px 12px 6px 6px; font-size: 13px; color: var(--tx-2); }
+.s-steps li > b:first-child { width: 22px; height: 22px; border-radius: 50%; background: var(--sun); color: var(--ink); display: grid; place-items: center; font-size: 12px; }

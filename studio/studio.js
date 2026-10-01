@@ -22,7 +22,9 @@ $('#waHelpBody').innerHTML = isIOS()
    AUTH
    ============================================================ */
 let user = null;
-async function boot() {
+let booting = null;
+function boot() { return (booting ||= realBoot().finally(() => { booting = null; })); }
+async function realBoot() {
   if (!configured) { $('#loginView').hidden = false; toast('Shop not connected yet — add the Supabase keys in assets/config.js', 'err'); return; }
   const { data } = await sb.auth.getSession();
   user = data.session?.user ?? null;
@@ -31,7 +33,8 @@ async function boot() {
   if (!ok) { $('#loginView').hidden = false; $('#notAdmin').hidden = false; $('#appView').hidden = true; return; }
   $('#loginView').hidden = true; $('#appView').hidden = false;
   loadInboxBadge();
-  await takeSharedPhotos();
+  const shared = await takeSharedPhotos();
+  if (!shared && !picked.length) await restorePending();
 }
 $('#sGoogle').addEventListener('click', () => signInGoogle('/studio/' + location.search));
 $('#sLogin').addEventListener('submit', async (e) => {
@@ -89,8 +92,38 @@ function addFiles(files) {
   if (!imgs.length) return;
   picked.push(...imgs.map((file) => ({ file, url: URL.createObjectURL(file) })));
   if (picked.length > 4 && group === 'one') setGroup('each');
-  showGroupStep();
+  savePending();
+  // One photo: go straight to the AI. Several: ask "one piece or separate pieces?" first.
+  if (picked.length === 1 && $('#draftStep').hidden) startDrafts();
+  else showGroupStep();
 }
+
+/* keep chosen photos safe if the phone reloads the page (common after using the camera) */
+async function savePending() {
+  if (!('caches' in window)) return;
+  try {
+    await caches.delete('studio-pending');
+    const c = await caches.open('studio-pending');
+    await Promise.all(picked.map((p, i) => c.put(`/pending/${i}`, new Response(p.file, { headers: { 'Content-Type': p.file.type || 'image/jpeg' } }))));
+  } catch {}
+}
+async function restorePending() {
+  if (!('caches' in window)) return;
+  try {
+    const c = await caches.open('studio-pending');
+    const keys = await c.keys();
+    if (!keys.length) return;
+    const files = [];
+    for (const k of keys.sort((a, b) => a.url.localeCompare(b.url, undefined, { numeric: true }))) {
+      const b = await (await c.match(k)).blob();
+      files.push(new File([b], 'photo.jpg', { type: b.type || 'image/jpeg' }));
+    }
+    picked = files.map((file) => ({ file, url: URL.createObjectURL(file) }));
+    goTab('add'); showGroupStep();
+    toast('Your photos are still here ✺ Tap “Next” to continue');
+  } catch {}
+}
+async function clearPending() { try { await caches.delete('studio-pending'); } catch {} }
 $('#camInput').addEventListener('change', (e) => { addFiles(e.target.files); e.target.value = ''; });
 $('#galInput').addEventListener('change', (e) => { addFiles(e.target.files); e.target.value = ''; });
 
@@ -103,6 +136,7 @@ function showGroupStep() {
 $('#pickedStrip').addEventListener('click', (e) => {
   const b = e.target.closest('[data-rm]'); if (!b) return;
   picked.splice(+b.dataset.rm, 1);
+  savePending();
   picked.length ? showGroupStep() : resetAdd();
 });
 function setGroup(g) {
@@ -118,13 +152,13 @@ function resetAdd() {
   picked = []; drafts = []; $('#hint').value = '';
   $('#pickStep').hidden = false; $('#groupStep').hidden = true; $('#draftStep').hidden = true;
   $('#drafts').innerHTML = '';
-  clearShareInbox();
+  clearShareInbox(); clearPending();
 }
 
 /* photos shared from WhatsApp (Android share sheet → service worker → here) */
 async function takeSharedPhotos() {
   const n = +new URLSearchParams(location.search).get('shared');
-  if (!n || !('caches' in window)) return;
+  if (!n || !('caches' in window)) return false;
   const inbox = await caches.open('share-inbox');
   const files = [];
   for (let i = 0; i < n; i++) {
@@ -135,6 +169,7 @@ async function takeSharedPhotos() {
   if (note) { const t = (await note.text()).trim(); if (t && !/^https?:\/\//.test(t)) $('#hint').value = t; }
   history.replaceState({}, '', '/studio/');
   if (files.length) { goTab('add'); addFiles(files); toast(`${files.length} photo${files.length > 1 ? 's' : ''} from WhatsApp ✺`); }
+  return files.length > 0;
 }
 async function clearShareInbox() {
   if (!('caches' in window)) return;
@@ -146,11 +181,14 @@ async function clearShareInbox() {
    ============================================================ */
 let drafts = []; // { files:[File], urls:[], data:{...}, status }
 
-$('#runAI').addEventListener('click', async () => {
+$('#runAI').addEventListener('click', () => startDrafts());
+const withTimeout = (p, ms) => Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error('The AI took too long')), ms))]);
+async function startDrafts() {
   if (!picked.length) return;
   const groups = group === 'one' ? [picked] : picked.map((p) => [p]);
   drafts = groups.map((g) => ({ files: g.map((p) => p.file), urls: g.map((p) => p.url), data: null, err: null }));
-  $('#groupStep').hidden = true; $('#draftStep').hidden = false;
+  $('#pickStep').hidden = true; $('#groupStep').hidden = true; $('#draftStep').hidden = false;
+  scrollTo(0, 0);
   renderDrafts();
   const hint = $('#hint').value.trim();
   // up to 3 at a time
@@ -160,7 +198,7 @@ $('#runAI').addEventListener('click', async () => {
       const d = drafts[idx++];
       try {
         const images = await Promise.all(d.files.slice(0, 4).map((f) => shrink(f, 768, 0.72, true)));
-        const { data, error } = await sb.functions.invoke('ai-describe', { body: { images, hint } });
+        const { data, error } = await withTimeout(sb.functions.invoke('ai-describe', { body: { images, hint } }), 45000);
         if (error || data?.error) throw new Error(data?.error || (await error.context?.json?.().catch(() => null))?.error || error.message);
         d.data = normalize(data);
       } catch (e) {
@@ -172,8 +210,9 @@ $('#runAI').addEventListener('click', async () => {
   };
   await Promise.all([worker(), worker(), worker()]);
   const failed = drafts.filter((d) => d.err);
-  if (failed.length) toast(`AI couldn't write ${failed.length === drafts.length ? 'these' : failed.length} — you can type the details`, 'err');
-});
+  if (failed.length) toast(`AI couldn't write ${failed.length === drafts.length ? 'this' : failed.length} — type the details, then tap Publish`, 'err');
+  else toast('Done ✺ Check the details, then tap Publish');
+}
 
 function normalize(a) {
   const hintPrice = ($('#hint').value.match(/(\d{2,3})\s*k\b/i)?.[1] || 0) * 1000 || +($('#hint').value.match(/\b(\d{4,7})\b/)?.[1] || 0);
@@ -214,7 +253,7 @@ function editorHTML(d, i, existing = false) {
 function renderDrafts() {
   $('#drafts').innerHTML = drafts.map((_, i) => `<article class="draft" id="draft-${i}"></article>`).join('');
   drafts.forEach((_, i) => renderDraft(i));
-  $('#publishAll').textContent = drafts.length > 1 ? `Publish all ${drafts.length}` : 'Publish';
+  $('#publishAll').textContent = drafts.length > 1 ? `Publish all ${drafts.length} to shop` : 'Publish to shop';
 }
 function renderDraft(i) {
   const el = $(`#draft-${i}`); if (!el) return;
